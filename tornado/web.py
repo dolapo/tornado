@@ -420,8 +420,6 @@ class RequestHandler(object):
             loader = self.application.settings.get("template_loader") or\
               template.Loader(template_path)
             RequestHandler._templates[template_path] = loader
-        if self.application.settings.get("debug"):
-          RequestHandler._templates[template_path].reset()
         t = RequestHandler._templates[template_path].load(template_name)
         args = dict(
             handler=self,
@@ -1015,7 +1013,9 @@ class Application(object):
         # In debug mode, re-compile templates and reload static files on every
         # request so you don't need to restart to see changes
         if self.settings.get("debug"):
-            RequestHandler._templates = None
+            if getattr(RequestHandler, "_templates", None):
+              map(lambda loader: loader.reset(),
+                  RequestHandler._templates.values())
             RequestHandler._static_hashes = {}
 
         handler._execute(transforms, *args)

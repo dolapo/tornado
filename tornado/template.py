@@ -172,7 +172,7 @@ class Loader(object):
     def reset(self):
       self.templates = {}
 
-    def _resolve_path(self, name, parent_path=None):
+    def resolve_path(self, name, parent_path=None):
         if parent_path and not parent_path.startswith("<") and \
            not parent_path.startswith("/") and \
            not name.startswith("/"):
@@ -184,7 +184,7 @@ class Loader(object):
         return name
 
     def load(self, name, parent_path=None):
-        name = self._resolve_path(name, parent_path=parent_path)
+        name = self.resolve_path(name, parent_path=parent_path)
         if name not in self.templates:
             path = os.path.join(self.root, name)
             f = open(path, "r")
