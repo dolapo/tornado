@@ -417,8 +417,11 @@ class RequestHandler(object):
         if not getattr(RequestHandler, "_templates", None):
             RequestHandler._templates = {}
         if template_path not in RequestHandler._templates:
-            RequestHandler._templates[template_path] = template.Loader(
-                template_path)
+            loader = self.application.settings.get("template_loader") or\
+              template.Loader(template_path)
+            RequestHandler._templates[template_path] = loader
+        if self.application.settings.get("debug"):
+          RequestHandler._templates[template_path].reset()
         t = RequestHandler._templates[template_path].load(template_name)
         args = dict(
             handler=self,
