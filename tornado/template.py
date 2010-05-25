@@ -88,7 +88,6 @@ import logging
 import os.path
 import re
 
-
 class Template(object):
     """A compiled template.
 
@@ -465,6 +464,13 @@ def _parse(reader, in_block=None):
             # If the first curly brace is not the start of a special token,
             # start searching from the character after it
             if reader[curly + 1] not in ("{", "%"):
+                curly += 1
+                continue
+            # When there are more than 2 curlies in a row, use the
+            # innermost ones.  This is useful when generating languages
+            # like latex where curlies are also meaningful
+            if (curly + 2 < reader.remaining() and
+                reader[curly + 1] == '{' and reader[curly + 2] == '{'):
                 curly += 1
                 continue
             break
